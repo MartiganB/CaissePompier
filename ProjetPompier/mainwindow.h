@@ -4,6 +4,10 @@
 #include <QMainWindow>
 #include <QTextBrowser>
 #include <QPushButton>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +24,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void verifierEAN();
     void on_pushButton_1_clicked();
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
@@ -35,7 +40,11 @@ private slots:
     void on_pushButton_Valider_clicked();
     void on_pushButton_Multiplier_clicked();
 
+    void on_pushButton_Suppr_clicked();
+
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase db;
+
 };
 #endif // MAINWINDOW_H
