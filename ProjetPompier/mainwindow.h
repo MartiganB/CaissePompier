@@ -8,6 +8,7 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QDebug>
+#include <QKeyEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,6 +44,7 @@ private slots:
     void on_pushButton_Suppr_clicked();
 
 private:
+    void keyPressEvent(QKeyEvent* event) override;
     Ui::MainWindow *ui;
     QSqlDatabase db;
 
