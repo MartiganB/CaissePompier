@@ -10,6 +10,9 @@
     <height>935</height>
    </rect>
   </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -299,7 +302,7 @@ background-color: rgb(255, 144, 17);</string>
      <string>X</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser_AffPrix">
+   <widget class="QTextEdit" name="textEdit_AffPrix">
     <property name="geometry">
      <rect>
       <x>590</x>
@@ -332,7 +335,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p align=&quot;right&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser_DerArticle">
+   <widget class="QTextEdit" name="textEdit_DerArticle">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -361,7 +364,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="textBrowser_Carte">
+   <widget class="QTextEdit" name="textEdit_Carte">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -385,21 +388,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:700;&quot;&gt;Carte de Martigan : 100,50€&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QListView" name="listView_Articles">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>821</width>
-      <height>681</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(0, 0, 0);
-background-color: rgb(255, 255, 255);</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_13">
+   <widget class="QPushButton" name="pushButton_AnnuleDerLigne">
     <property name="geometry">
      <rect>
       <x>1100</x>
@@ -619,6 +608,38 @@ background-color: rgb(255, 144, 17);</string>
     </property>
     <property name="text">
      <string>←</string>
+    </property>
+   </widget>
+   <widget class="QTableView" name="tableView_Articles">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>801</width>
+      <height>681</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(0, 0, 0);
+background-color: rgb(255, 255, 255);</string>
+    </property>
+   </widget>
+   <widget class="QScrollBar" name="verticalScrollBar">
+    <property name="geometry">
+     <rect>
+      <x>821</x>
+      <y>10</y>
+      <width>20</width>
+      <height>681</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Vertical</enum>
     </property>
    </widget>
   </widget>

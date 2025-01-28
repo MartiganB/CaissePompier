@@ -2,13 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTextBrowser>
 #include <QPushButton>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QStandardItemModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,6 +42,7 @@ private slots:
     void on_pushButton_Multiplier_clicked();
 
     void on_pushButton_Suppr_clicked();
+    void on_textEdit_EAN_textChanged();
 
 private:
     void keyPressEvent(QKeyEvent* event) override;

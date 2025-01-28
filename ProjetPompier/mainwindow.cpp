@@ -1,15 +1,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "QTextBrowser"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->textEdit_EAN->setDisabled(true);
     //Permet de donner un nom à l'onglet
     setWindowTitle("Caisse - [CSP]");
+
+    //Permet d'empecher l'utilisateur de cliquer sur l'objet
+    ui->textEdit_EAN->setDisabled(true);
+    ui->textEdit_DerArticle->setDisabled(true);
+    ui->textEdit_Carte->setDisabled(true);
+    ui->textEdit_AffPrix->setDisabled(true);
+    ui->tableView_Articles->setDisabled(true);
 
     //Connexion à la base de donnée en local
     db = QSqlDatabase::addDatabase("QMYSQL");
@@ -25,7 +30,26 @@ MainWindow::MainWindow(QWidget *parent)
     {
         qDebug() << "Connexion a la base de donnees reussie";
     }
+
+    //Permet de lier le bouton a une fonction
     connect(ui->pushButton_Valider, &QPushButton::clicked, this, &MainWindow::verifierEAN);
+
+    ui->tableView_Articles->verticalHeader()->setVisible(false);
+
+    ui->textEdit_AffPrix->setText("0€");
+
+    // Modèle avec 3 colonnes et plusieurs lignes
+    QStandardItemModel *model = new QStandardItemModel(0, 3, this);
+    model->setHeaderData(0, Qt::Horizontal, "Qte");
+    model->setHeaderData(1, Qt::Horizontal, "Nom");
+    model->setHeaderData(2, Qt::Horizontal, "Prix");
+
+
+    ui->tableView_Articles->setModel(model);
+    ui->tableView_Articles->setColumnWidth(0,50);
+    ui->tableView_Articles->setColumnWidth(1,610);
+    ui->tableView_Articles->setColumnWidth(2,125);
+    //ui->tableView_Articles->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 MainWindow::~MainWindow()
@@ -39,8 +63,14 @@ void MainWindow::verifierEAN()
 
     //Cherche si il y a un "x" dans textEdit_EAN
     int xIndex = content.indexOf("x", Qt::CaseInsensitive);
+    QString valeurAvantX;
     if (xIndex == -1) {
         qDebug() << "Aucun 'x' trouvé dans l'entrée";
+        valeurAvantX = "1";
+    }
+    else
+    {
+        valeurAvantX = content.left(xIndex).trimmed();
     }
 
     // Récupérer le code EAN après "x"
@@ -67,19 +97,41 @@ void MainWindow::verifierEAN()
     // Vérifier si on a trouvé un produit
     if (query.next()) {
         QString nom = query.value(0).toString();
-        QString prix = query.value(1).toString();
-        QString quantite = query.value(2).toString();
-
+        double prix = query.value(1).toDouble();
+        QString quantite = valeurAvantX;
         qDebug() << "Produit trouvé : Nom =" << nom << ", Prix =" << prix << "€, Quantité =" << quantite;
 
-        // Affichage dans un widget par exemple
-        ui->textBrowser_DerArticle->setText(QString(nom));
-        ui->textBrowser_AffPrix->setText(QString(prix)+"€");
+        // Affichage dans les widgets
+        ui->textEdit_DerArticle->setText(nom);
+        //ui->textEdit_AffPrix->setText(QString::number(prix) + "€");
+
+        // Ajouter au tableau si non présent, sinon incrémenter la quantité
+        QStandardItemModel *model = qobject_cast<QStandardItemModel *>(ui->tableView_Articles->model());
+        if (!model) return;
+
+        QString ancienPrix = ui->textEdit_AffPrix->toPlainText();
+
+        int enlvEuro = ancienPrix.indexOf("€", Qt::CaseInsensitive);
+        QString valeurAvantEuro = ancienPrix.left(enlvEuro).trimmed();
+
+        double tt = prix * quantite.toDouble();
+        double ancienPrixDouble = tt+valeurAvantEuro.toDouble();
+
+        QList<QStandardItem *> newRow;
+        newRow.append(new QStandardItem(quantite)); // Quantité
+        newRow.append(new QStandardItem(nom)); // Nom
+        newRow.append(new QStandardItem(QString::number(tt, 'f', 2) + "€"));
+        model->appendRow(newRow);
+        ui->tableView_Articles->scrollToBottom();
+
+        ui->textEdit_AffPrix->setText(QString::number(ancienPrixDouble, 'f', 2) + "€");
+        // Effacer le champ EAN après ajout
         ui->textEdit_EAN->clear();
     } else {
         qDebug() << "Produit non trouvé pour EAN :" << codeEAN;
-        ui->textEdit_EAN->setText("Produit non trouvé.");
+        ui->textEdit_AffPrix->clear();
         ui->textEdit_EAN->clear();
+        ui->textEdit_DerArticle->setText("Produit non trouvé.");
     }
 }
 
@@ -145,8 +197,7 @@ void MainWindow::on_pushButton_virgule_clicked()
 }
 void MainWindow::on_pushButton_Valider_clicked()
 {
-    //QString content = ui->textEdit_EAN->toPlainText();
-    //connect(ui->pushButton_Valider, &QPushButton::clicked, this, &MainWindow::verifierEAN);
+
 }
 void MainWindow::on_pushButton_Multiplier_clicked()
 {
@@ -157,20 +208,27 @@ void MainWindow::on_pushButton_Multiplier_clicked()
 void MainWindow::on_pushButton_Suppr_clicked()
 {
     QTextCursor cursor = ui->textEdit_EAN->textCursor();
+    //Place le curseur a la fin du textEdit_EAN
     cursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-    cursor.deletePreviousChar(); // Supprime le caractère avant le curseur
-
+    // Supprime le caractère avant le curseur
+    cursor.deletePreviousChar();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QString text = ui->textEdit_EAN->toPlainText();
-    if(text == "\n")
-    {
-        qDebug() << "HEHEHE HA";
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        ui->textEdit_EAN->clear(); // Efface le texte
     }
 
     qDebug() << text;
     ui->textEdit_EAN->setPlainText(text + event->text());
 }
 
+void MainWindow::on_textEdit_EAN_textChanged()
+{
+    if (ui->textEdit_EAN->toPlainText().endsWith("\n")) {
+        verifierEAN();
+        ui->textEdit_EAN->clear();
+    }
+}
